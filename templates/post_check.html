@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}POST CHECK{% endblock %}
+
+{% block content %}
+<div class="card mt-5">
+    <div class="col-4">
+        {% if object.image %}
+        <img src="{{object.image.url}}" class="card-img-top" alt="...">
+        {% else %}
+        <img src="https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png" class="card-img-top"
+             alt="...">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{object.title}}</h5>
+            <p class="card-text">{{object.body}}</p>
+            <h5 class="card-title">Created by {{object.author}}</h5>
+            <p class="card-text">at {{object.created}}</p>
+            <p><i>Views</i> - {{object.views}}</p>
+            <p>Like{{object.total_likes|pluralize}} - {{object.total_likes}}</p>
+            {% if user.is_authenticated %}
+            <form action="{% url 'like' %}" method="post">
+                {% csrf_token %}
+                {% if like %}
+                <button name="post_pk" value="{{object.pk}}" type="submit" class="btn btn-outline-danger">Dislike
+                </button>
+                {% else %}
+                <button name="post_pk" value="{{object.pk}}" type="submit" class="btn btn-outline-success">Like</button>
+                {% endif %}
+            </form>
+            {% if object.author == user or user.is_staff %}
+            <div class="row">
+                <div class="col-6 mt-2">
+                    <a href="{% url 'post_edit' object.pk %}">
+                        <button type="button" class="btn btn-primary">Edit</button>
+                    </a>
+                    <a href="{% url 'post_delete' object.pk %}">
+                        <button type="button" class="btn btn-primary">Delete</button>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="main-comment-sections">
+    <div class="container-fluid mt-2 ml-2">
+        <div class="form-group row">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{comment_form|crispy}}
+                <input type="submit" value="React" class="btn btn-outline-success">
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="main-comment-section ml-2">
+    {{comments.count}} Comment{{comments|pluralize}}
+    {% for content in comments %}
+    <blockquote class="blockquote">
+        <p class="mb-0">{{content.comment}}</p>
+        <footer class="blockquote-footer">at {{content.timestamp}} by <cite
+                class="Source Title">{{content.user.username}}</cite>
+        </footer>
+    </blockquote>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

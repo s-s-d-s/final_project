@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}POSTS{% endblock %}
+
+{% block content %}
+<div class="row mt-5">
+    {% for post in object_list %}
+    {% if post.status %}
+    <div class="col-4">
+        <div class="card">
+            <h5 class="card-header">
+                Author - {{post.author}}
+            </h5>
+            <div class="card-body">
+                <h5 class="card-title">{{post.title}}</h5>
+                <p class="card-text">{{post.body|slice:50}}...</p>
+                <a href="{% url 'postcheck' post.pk%}" class="btn btn-primary">CHECK</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
